@@ -9,7 +9,8 @@ public class Look : MonoBehaviour
     //the following is in order to use rewired
     [Tooltip("Reference for using rewired")]
     [HideInInspector]
-    public Player myPlayer;
+    public Player player1;
+    public Player player2;
     [Header("Rewired")]
     [Tooltip("Number identifier for each player, must be above 0")]
     public int playerNum;
@@ -25,7 +26,8 @@ public class Look : MonoBehaviour
     private void Awake()
     {
         //Rewired Code
-        myPlayer = ReInput.players.GetPlayer(playerNum - 1);
+        player1 = ReInput.players.GetPlayer(0);
+        player2 = ReInput.players.GetPlayer(1);
         ReInput.ControllerConnectedEvent += OnControllerConnected;
     }
 
@@ -37,8 +39,16 @@ public class Look : MonoBehaviour
 
     void Update()
     {
-        lookDir.x = myPlayer.GetAxis("LookX") * sensitivity * Time.deltaTime;
-        lookDir.y = myPlayer.GetAxis("LookY") * sensitivity * Time.deltaTime;
+        if (playerNum == 1)
+        {
+            lookDir.x = player1.GetAxis("LookX") * sensitivity * Time.deltaTime;
+            lookDir.y = player1.GetAxis("LookY") * sensitivity * Time.deltaTime;
+        }
+        else if(playerNum == 2)
+        {
+            lookDir.x = player2.GetAxis("LookX") * sensitivity * Time.deltaTime;
+            lookDir.y = player2.GetAxis("LookY") * sensitivity * Time.deltaTime;
+        }
         Xrotation -= lookDir.y;
         Xrotation = Mathf.Clamp(Xrotation, -90f, 90f);
 
@@ -50,7 +60,8 @@ public class Look : MonoBehaviour
     //these two methods are for ReWired, if any of you guys have any questions about it I can answer them, but you don't need to worry about this for working on the game - Buscemi
     void OnControllerConnected(ControllerStatusChangedEventArgs arg)
     {
-        CheckController(myPlayer);
+        CheckController(player1);
+        CheckController(player2);
     }
     void CheckController(Player player)
     {
