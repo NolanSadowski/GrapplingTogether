@@ -27,6 +27,19 @@ public class MainPlayer : MonoBehaviour
 
     Rigidbody rb;
 
+    [Header("Gravity Variables")]
+    public float gravityUp;
+    public float gravityDown;
+    public float jumpVel;
+    public float jumpTimerMax;
+    bool isJumping;
+    float jumpTimer;
+    bool doubleJump;
+    public float maxDownVel;
+    public float onPlatformTimer;
+    public float onPlatformTimerMax;
+    public bool onTopOfPlatform;
+
     private void Awake()
     {
         //Rewired Code
@@ -74,7 +87,18 @@ public class MainPlayer : MonoBehaviour
 
     void Gravity()
     {
-        
+        //gravity logic
+        if (velocity.y > -maxDownVel)
+        { //if we haven't reached maxDownVel
+            if (velocity.y > 0)
+            { //if player is moving up
+                velocity.y -= gravityUp * Time.fixedDeltaTime;
+            }
+            else
+            { //if player is moving down
+                velocity.y -= gravityDown * Time.fixedDeltaTime;
+            }
+        }
     }
 
     //[REWIRED METHODS]
