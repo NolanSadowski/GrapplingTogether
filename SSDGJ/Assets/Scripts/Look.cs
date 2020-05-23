@@ -4,9 +4,8 @@ using UnityEngine;
 using Rewired;
 using Rewired.ControllerExtensions;
 
-public class MainPlayer : MonoBehaviour
+public class Look : MonoBehaviour
 {
-
     //the following is in order to use rewired
     [Tooltip("Reference for using rewired")]
     [HideInInspector]
@@ -15,18 +14,13 @@ public class MainPlayer : MonoBehaviour
     [Tooltip("Number identifier for each player, must be above 0")]
     public int playerNum;
 
-    [Header("Movement")]
+    public float sensitivity;
 
-    public float speed;
+    public Transform body;
 
-    bool isGrounded;
+    float Xrotation = 0f;
 
-    Vector3 velocity;
-    float velocityY = 0;
-
-    Rigidbody rb;
-
-    public bool toggleCrouch;
+    Vector2 lookDir;
 
     private void Awake()
     {
@@ -35,50 +29,29 @@ public class MainPlayer : MonoBehaviour
         ReInput.ControllerConnectedEvent += OnControllerConnected;
     }
 
-    // Start is called before the first frame update
     void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        Movement();
-
-        Gravity();
-    }
-
-    private void FixedUpdate()
-    {
-        FixedMovement();
-    }
-
-    void Movement()
-    {
-
-        velocity = new Vector3(myPlayer.GetAxis("MoveX"), velocityY, myPlayer.GetAxis("MoveZ")) * speed;
-        velocity = transform.worldToLocalMatrix.inverse * velocity;
-
-    }
-
-    void FixedMovement()
-    {
-        rb.MovePosition(rb.position + velocity * Time.fixedDeltaTime);
-    }
-
-    void Gravity()
     {
         
     }
 
+
+    void Update()
+    {
+        lookDir.x = myPlayer.GetAxis("LookX") * sensitivity * Time.deltaTime;
+        lookDir.y = myPlayer.GetAxis("LookY") * sensitivity * Time.deltaTime;
+        Xrotation -= lookDir.y;
+        Xrotation = Mathf.Clamp(Xrotation, -90f, 90f);
+
+        transform.localRotation = Quaternion.Euler(Xrotation, 0f, 0f);
+
+        body.Rotate(Vector3.up * lookDir.x);
+    }
     //[REWIRED METHODS]
     //these two methods are for ReWired, if any of you guys have any questions about it I can answer them, but you don't need to worry about this for working on the game - Buscemi
     void OnControllerConnected(ControllerStatusChangedEventArgs arg)
     {
         CheckController(myPlayer);
     }
-
     void CheckController(Player player)
     {
         foreach (Joystick joyStick in player.controllers.Joysticks)
@@ -106,5 +79,4 @@ public class MainPlayer : MonoBehaviour
             }
         }
     }
-
 }
